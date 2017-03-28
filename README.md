@@ -8,7 +8,7 @@ Includes examples following the [official style guide](https://angular.io/docs/t
 
 ## Usage
 
-Clone the repo to where you want to use it, then install the npm packages with `npm i`. You may also need to run `gem install scss-lint` for the linter to work.
+Clone the repo to where you want to use it, then install the npm packages with `npm install`.
 
 To generate the output directory `dist/` run the command `gulp`.
 
