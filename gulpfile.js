@@ -9,10 +9,8 @@ var gulp = require('gulp'),
 
     mocha = require('gulp-mocha'),
     concat = require('gulp-concat'),
-    imagemin = require('gulp-imagemin'),
+    // imagemin = require('gulp-imagemin'),
 
-    scssLint = require('gulp-scss-lint'),
-    sass = require('gulp-sass'),
     cssPrefixer = require('gulp-autoprefixer'),
     cssMinify = require('gulp-cssnano');
 
@@ -54,25 +52,16 @@ gulp.task('html', () => {
         .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('images', () => {
-    return gulp.src('src/images/**/*.*')
-        .pipe(imagemin())
-        .pipe(gulp.dest('dist/images/'));
-});
+// gulp.task('images', () => {
+//     return gulp.src('src/images/**/*.*')
+//         .pipe(imagemin())
+//         .pipe(gulp.dest('dist/images/'));
+// });
 
-gulp.task('scss-lint', function() {
-    return gulp.src('src/scss/**/*.scss')
-        .pipe(scssLint({ config: 'lint.yml' }));
-});
 
-gulp.task('scss', () => {
-    return gulp.src('src/scss/main.scss')
-        .pipe(sass({
-            precision: 10,
-            includePaths: 'node_modules/node-normalize-scss'
-        }))
+gulp.task('css', () => {
+    return gulp.src('src/**/*.css')
         .pipe(concat('styles.css'))
-        .pipe(cssPrefixer())
         .pipe(gulp.dest('dist/css/'));
 });
 
@@ -99,9 +88,9 @@ gulp.task('minify', () => {
 
 gulp.task('watch', () => {
     var watchTs = gulp.watch('src/app/**/**.ts', [ 'system-build' ]),
-        watchScss = gulp.watch('src/scss/**/*.scss', [ 'scss-lint', 'scss' ]),
+        watchScss = gulp.watch('src/**/*.css', [ 'css' ]),
         watchHtml = gulp.watch('src/**/*.html', [ 'html' ]),
-        watchImages = gulp.watch('src/images/**/*.*', [ 'images' ]),
+        // watchImages = gulp.watch('src/images/**/*.*', [ 'images' ]),
 
         onChanged = function(event) {
             console.log('File ' + event.path + ' was ' + event.type + '. Running tasks...');
@@ -110,7 +99,7 @@ gulp.task('watch', () => {
     watchTs.on('change', onChanged);
     watchScss.on('change', onChanged);
     watchHtml.on('change', onChanged);
-    watchImages.on('change', onChanged);
+    // watchImages.on('change', onChanged);
 });
 
 gulp.task('watchtests', () => {
@@ -129,8 +118,7 @@ gulp.task('default', [
     'shims',
     'system-build',
     'html',
-    'images',
-    'scss-lint',
-    'scss'
+    // 'images',
+    'css'
 ]);
 
