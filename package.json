@@ -6,7 +6,8 @@
   "private": true,
   "scripts": {
     "build": "./node_modules/gulp/bin/gulp.js",
-    "build-dev": "./node_modules/.bin/webpack --config ./webpack.config.dev.js --progress --watch"
+    "-build-dev": "./node_modules/.bin/webpack --config ./webpack.config.dev.js --progress --watch",
+    "build-dev": "./node_modules/.bin/webpack --progress --watch"
   },
   "author": "MaxXx1313 <fomy.spam@gmail.com>",
   "license": "MIT",
