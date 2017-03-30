@@ -3,9 +3,13 @@ const webpack = require('webpack');
 
 
 module.exports = {
+
+  context: path.resolve(__dirname, "src"),
+  target: "web",
+
   entry: {
-    main: './src/app/main.ts', // main app
-    shims: './src/shims.js',
+    main: './app/main.ts', // main app
+    // shims: './shims.js',
   },
   devtool: '#source-map',
   output: {
@@ -19,11 +23,12 @@ module.exports = {
   },
   module:{
     rules: [
-      {test: /\.ts$/, use: 'ts-loader'}
+      {test: /\.ts$/, use: 'ts-loader'},
+      { test: /\.(html)$/, loader: "file" }
 
     ]
   },
   plugins:[
-    new webpack.optimize.UglifyJsPlugin({comments:false, sourceMap:true})
+    // new webpack.optimize.UglifyJsPlugin({comments:false, sourceMap:true})
   ]
 };

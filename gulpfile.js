@@ -7,7 +7,7 @@ var gulp = require('gulp'),
     SystemBuilder = require('systemjs-builder'),
     jsMinify = require('gulp-uglify'),
 
-    mocha = require('gulp-mocha'),
+    // mocha = require('gulp-mocha'),
     concat = require('gulp-concat'),
     // imagemin = require('gulp-imagemin'),
 
@@ -17,7 +17,6 @@ var gulp = require('gulp'),
 
 gulp.task('clean', () => {
     return Promise.all([
-        del('dist'),
         del('build')
     ]);
 });
@@ -36,21 +35,6 @@ gulp.task('shims', () => {
         .pipe(gulp.dest('dist/js/'));
 });
 
-/**
- * build main app module
- browserify:  ./node_modules/browserify/bin/cmd.js ./build/app/main.js -o ./dist/js/bundle.js -d
- */
-gulp.task('mainApp', [ 'tsc' ], () => {
-    var builder = new SystemBuilder();
-
-    return builder.loadConfig('system.config.js')
-        .then(() => builder.buildStatic('app', 'dist/js/bundle.js', {
-            production: false,
-            rollup: false
-        }))
-        // .then(() => del('build'));
-});
-
 
 /**
  * compile ts scripts
@@ -62,6 +46,24 @@ gulp.task('tsc', () => {
         .pipe(tsProject())
         .pipe(gulp.dest('build/'));
 });
+
+/**
+ * build main app module
+ browserify:  ./node_modules/browserify/bin/cmd.js ./build/app/main.js -o ./dist/js/main.js -d
+ */
+gulp.task('mainApp', [ 'tsc' ], () => {
+    var builder = new SystemBuilder();
+
+    return builder.loadConfig('system.config.js')
+        .then(() => builder.buildStatic('app', 'dist/js/main.js', {
+            production: false,
+            sourceMaps: false,
+            rollup: false
+        }))
+        .then(() => del('build'));
+});
+
+
 
 /**
  * move html files
@@ -92,20 +94,20 @@ gulp.task('css', () => {
 /**
  * Run tests
  */
-gulp.task('test-run', [ 'tsc' ], () => {
-    return gulp.src('test/**/*.spec.js')
-        .pipe(mocha());
-});
-gulp.task('test', [ 'test-run' ], () => {
-    return del('build');
-});
+// gulp.task('test-run', [ 'tsc' ], () => {
+//     return gulp.src('test/**/*.spec.js')
+//         .pipe(mocha());
+// });
+// gulp.task('test', [ 'test-run' ], () => {
+//     return del('build');
+// });
 
 
 /**
  * Minify files
  */
-gulp.task('minify', () => {
-    var js = gulp.src('dist/js/bundle.js')
+gulp.task('minify', ['css', 'mainApp'], () => {
+    var js = gulp.src('dist/js/main.js')
         .pipe(jsMinify())
         .pipe(gulp.dest('dist/js/'));
 
@@ -139,31 +141,31 @@ gulp.task('watch', ['mainApp', 'css', 'html'], () => {
 /**
  * watch for tests
  */
-gulp.task('watchtests', () => {
-    var watchTs = gulp.watch('src/app/**/**.ts', [ 'test-run' ]),
-        watchTests = gulp.watch('test/**/*.spec.js', [ 'test-run' ]),
+// gulp.task('watchtests', () => {
+//     var watchTs = gulp.watch('src/app/**/**.ts', [ 'test-run' ]),
+//         watchTests = gulp.watch('test/**/*.spec.js', [ 'test-run' ]),
 
-    onChanged = function(event) {
-        console.log('File ' + event.path + ' was ' + event.type + '. Running tasks...');
-    };
+//     onChanged = function(event) {
+//         console.log('File ' + event.path + ' was ' + event.type + '. Running tasks...');
+//     };
 
-    watchTs.on('change', onChanged);
-    watchTests.on('change', onChanged);
-});
+//     watchTs.on('change', onChanged);
+//     watchTests.on('change', onChanged);
+// });
 
 
 /**
- * Main action: build dev environment
+ * Main action: build prod environment
  */
 gulp.task('default', [
     'shims',
     'mainApp',
     'html',
     // 'images',
-    'css'
+    'css',
+    'minify'
 ]);
 
 
 
-// TODO: prod
 

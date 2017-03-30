@@ -35,4 +35,3 @@
   System.config(config);
 
 })(this);
-
