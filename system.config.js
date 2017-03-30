@@ -6,7 +6,7 @@
     };
 
     var packages = {
-        'app':  { main: 'main.js',  defaultExtension: 'js' },
+        'app':  { main: 'app/main.js',  defaultExtension: 'js' },
         'rxjs': { defaultExtension: 'js' }
     };
 

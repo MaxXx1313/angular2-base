@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { ExampleComponent } from './example/example.component';
+import { ExampleComponent } from '../pages/example/example';
 
 @Component({
     selector: 'app-component',
