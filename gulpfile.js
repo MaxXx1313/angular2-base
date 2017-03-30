@@ -123,7 +123,7 @@ gulp.task('minify', ['css', 'mainApp'], () => {
  * Compile and watch. this is a common dev environment
  */
 gulp.task('watch', ['mainApp', 'css', 'html'], () => {
-    var watchTs = gulp.watch('src/app/**/**.ts', [ 'mainApp' ]),
+    var watchTs = gulp.watch('src/**/**.ts',     [ 'mainApp' ]),
         watchScss = gulp.watch('src/**/*.css',   [ 'css' ]),
         watchHtml = gulp.watch('src/**/*.html',  [ 'html' ]),
         // watchImages = gulp.watch('src/images/**/*.*', [ 'images' ]),

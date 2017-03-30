@@ -1,21 +1,13 @@
 import { Component } from '@angular/core';
 
-import { ExampleComponent } from '../pages/example/example';
+import { ExampleComponent } from '../page/example/example';
 
 @Component({
     selector: 'app-component',
     // Using backticks allows multi-line templates.
     // This is long enough to be in a separate file,
     // but is inline as an example.
-    template: `
-    <div class="container">
-        <h1>My Angular 2 Base App</h1>
-        <p>
-            <a [routerLink]="['/']">Home</a> |
-            <a [routerLink]="['/about']">About</a>
-        </p>
-        <router-outlet></router-outlet>
-    </div>`
+    templateUrl: 'app/app.html',
 })
 export class AppComponent {
     public isTestable: boolean = true;
