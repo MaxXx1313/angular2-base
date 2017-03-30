@@ -14,10 +14,18 @@ var gulp = require('gulp'),
     cssPrefixer = require('gulp-autoprefixer'),
     cssMinify = require('gulp-cssnano');
 
+
 gulp.task('clean', () => {
-    return del('dist');
+    return Promise.all([
+        del('dist'),
+        del('build')
+    ]);
 });
 
+
+/**
+ * build shim module
+ */
 gulp.task('shims', () => {
     return gulp.src([
             'node_modules/core-js/client/shim.js',
@@ -28,7 +36,11 @@ gulp.task('shims', () => {
         .pipe(gulp.dest('dist/js/'));
 });
 
-gulp.task('system-build', [ 'tsc' ], () => {
+/**
+ * build main app module
+ browserify:  ./node_modules/browserify/bin/cmd.js ./build/app/main.js -o ./dist/js/bundle.js -d
+ */
+gulp.task('mainApp', [ 'tsc' ], () => {
     var builder = new SystemBuilder();
 
     return builder.loadConfig('system.config.js')
@@ -36,44 +48,62 @@ gulp.task('system-build', [ 'tsc' ], () => {
             production: false,
             rollup: false
         }))
-        .then(() => del('build'));
+        // .then(() => del('build'));
 });
 
+
+/**
+ * compile ts scripts
+ */
 gulp.task('tsc', () => {
     del('build');
 
-    return gulp.src('src/app/**/*.ts')
+    return gulp.src('src/**/*.ts')
         .pipe(tsProject())
         .pipe(gulp.dest('build/'));
 });
 
+/**
+ * move html files
+ */
 gulp.task('html', () => {
     return gulp.src('src/**/**.html')
         .pipe(gulp.dest('dist/'));
 });
 
+/**
+ * Optimize images
+ */
 // gulp.task('images', () => {
 //     return gulp.src('src/images/**/*.*')
 //         .pipe(imagemin())
 //         .pipe(gulp.dest('dist/images/'));
 // });
 
-
+/**
+ * Compile/Move css files
+ */
 gulp.task('css', () => {
     return gulp.src('src/**/*.css')
         .pipe(concat('styles.css'))
         .pipe(gulp.dest('dist/css/'));
 });
 
+/**
+ * Run tests
+ */
 gulp.task('test-run', [ 'tsc' ], () => {
     return gulp.src('test/**/*.spec.js')
         .pipe(mocha());
 });
-
 gulp.task('test', [ 'test-run' ], () => {
     return del('build');
 });
 
+
+/**
+ * Minify files
+ */
 gulp.task('minify', () => {
     var js = gulp.src('dist/js/bundle.js')
         .pipe(jsMinify())
@@ -86,10 +116,14 @@ gulp.task('minify', () => {
     return merge(js, css);
 });
 
-gulp.task('watch', () => {
-    var watchTs = gulp.watch('src/app/**/**.ts', [ 'system-build' ]),
-        watchScss = gulp.watch('src/**/*.css', [ 'css' ]),
-        watchHtml = gulp.watch('src/**/*.html', [ 'html' ]),
+
+/**
+ * Compile and watch. this is a common dev environment
+ */
+gulp.task('watch', ['mainApp', 'css', 'html'], () => {
+    var watchTs = gulp.watch('src/app/**/**.ts', [ 'mainApp' ]),
+        watchScss = gulp.watch('src/**/*.css',   [ 'css' ]),
+        watchHtml = gulp.watch('src/**/*.html',  [ 'html' ]),
         // watchImages = gulp.watch('src/images/**/*.*', [ 'images' ]),
 
         onChanged = function(event) {
@@ -102,6 +136,9 @@ gulp.task('watch', () => {
     // watchImages.on('change', onChanged);
 });
 
+/**
+ * watch for tests
+ */
 gulp.task('watchtests', () => {
     var watchTs = gulp.watch('src/app/**/**.ts', [ 'test-run' ]),
         watchTests = gulp.watch('test/**/*.spec.js', [ 'test-run' ]),
@@ -114,11 +151,19 @@ gulp.task('watchtests', () => {
     watchTests.on('change', onChanged);
 });
 
+
+/**
+ * Main action: build dev environment
+ */
 gulp.task('default', [
     'shims',
-    'system-build',
+    'mainApp',
     'html',
     // 'images',
     'css'
 ]);
+
+
+
+// TODO: prod
 
